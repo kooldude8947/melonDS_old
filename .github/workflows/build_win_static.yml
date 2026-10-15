@@ -42,6 +42,7 @@ jobs:
           vcpkgGitCommitId: '9b965a116838c6cdcd36bca60d1b81b030c8ab8d'
           vcpkgDirectory: ${{ github.workspace }}\melonDS\vcpkg
           vcpkgJsonGlob: ${{ github.workspace }}\melonDS\vcpkg.json
+          runVcpkgInstall: true
           
       - name: Build
         uses: lukka/run-cmake@v10
