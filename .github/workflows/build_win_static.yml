@@ -18,12 +18,15 @@ jobs:
           msystem: ucrt64
           update: false
 
+      - name: Install SDL2
+        run: vcpkg install sdl2
+        
       - name: Install pkgconf
         run: choco install pkgconfiglite
         
       - name: Install dependencies
         shell: msys2 {0}
-        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,SDL2,libarchive,enet,zstd,faad2}
+        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,libarchive,enet,zstd,faad2}
         
       - name: Download source code
         shell: cmd
