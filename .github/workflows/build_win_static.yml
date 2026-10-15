@@ -32,7 +32,7 @@ jobs:
       - name: Set up vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-          vcpkgJsonGlob: ${{ github.workspace }}/melonDS/vcpkg.json
+          vcpkgJsonGlob: ${{ github.workspace }}\melonDS\vcpkg.json
           
       - name: Build
         uses: lukka/run-cmake@v10
