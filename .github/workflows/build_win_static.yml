@@ -1,0 +1,45 @@
+name: melonDS Windows Static
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v7
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ucrt64
+          update: true
+          install: >-
+            enet
+            faad2
+            libarchive
+            SDL2
+            toolchain
+            zstd
+      
+      - name: Download source code
+        shell: cmd
+        run: |
+          git clone --branch b86390e4428bf38ce4c1ce0e9ca446d6d25955e8 https://github.com/melonDS-emu/melonDS
+          git clone https://github.com/kooldude8947/Qt-Win-Static
+          git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
+
+      - name: Build
+        working-directory: ${{ github.workspace }}\melonDS-emu\melonDS
+        shell: cmd
+        run: |
+          mkdir build
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\${{ github.repository_owner }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5
+          cmake --build build
+
+      - name: List dir
+        shell: cmd
+        run: dir "${{ github.workspace }}\melonDS-emu\melonDS\build"
