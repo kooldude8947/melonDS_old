@@ -23,7 +23,7 @@ jobs:
           
       - name: Install dependencies
         shell: msys2 {0}
-        run: pacman --noconfirm -S mingw-w64-x86_64-{toolchain,SDL2,libarchive,enet,zstd,faad2}
+        run: pacman --noconfirm -S mingw-w64-x86_64-{toolchain,SDL2,libarchive,zstd,faad2} mingw-w64-clang-x86_64-enet
         
       - name: Download source code
         shell: cmd
