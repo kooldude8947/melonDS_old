@@ -26,7 +26,7 @@ jobs:
         
       - name: Install dependencies
         shell: msys2 {0}
-        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,libarchive,enet,zstd,faad2}
+        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,SDL2,libarchive,enet,zstd,faad2}
         
       - name: Download source code
         shell: cmd
@@ -36,7 +36,7 @@ jobs:
 
       - name: Build
         working-directory: ${{ github.workspace }}\melonDS
-        shell: cmd
+        shell: msys2 {0}
         run: |
           mkdir build
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5
