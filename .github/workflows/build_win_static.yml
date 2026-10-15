@@ -30,7 +30,7 @@ jobs:
 
       - name: Copy modified source code to original folders
         shell: cmd
-        run: copy /y /v ${{ github.workspace }}/newsrc ${{ github.workspace }}/melonDS
+        run: copy /y /v ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
         
       - name: Build
         working-directory: ${{ github.workspace }}\melonDS
