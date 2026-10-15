@@ -30,7 +30,7 @@ jobs:
 
       - name: Copy modified source code to original folders
         shell: cmd
-        run: robocopy /e ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
+        run: xcopy /q /s /x /y ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
         
       - name: Build
         working-directory: ${{ github.workspace }}\melonDS
