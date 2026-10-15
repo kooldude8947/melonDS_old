@@ -16,7 +16,7 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: ucrt64
-          update: true
+          update: false
 
       - name: Install dependencies
         shell: msys2 {0}
@@ -29,13 +29,13 @@ jobs:
           git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
 
       - name: Build
-        working-directory: ${{ github.workspace }}\melonDS-emu\melonDS
+        working-directory: ${{ github.workspace }}\melonDS
         shell: cmd
         run: |
           mkdir build
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\${{ github.repository_owner }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5
           cmake --build build
 
       - name: List dir
         shell: cmd
-        run: dir "${{ github.workspace }}\melonDS-emu\melonDS\build"
+        run: dir "${{ github.workspace }}\melonDS\build"
