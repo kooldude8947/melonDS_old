@@ -17,16 +17,10 @@ jobs:
         with:
           msystem: ucrt64
           update: false
-
-      - name: List Clang
-        shell: cmd
-        run: |
-          echo "Dir 2..."
-          dir /S "C:\Program Files\LLVM"
           
       - name: Install dependencies
         shell: msys2 {0}
-        run: pacmana --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,SDL2,libarchive,enet,zstd,faad2}
+        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,SDL2,libarchive,enet,zstd,faad2}
         
       - name: Download source code
         shell: cmd
