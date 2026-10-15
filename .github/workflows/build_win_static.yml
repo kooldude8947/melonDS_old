@@ -19,7 +19,7 @@ jobs:
           update: false
 
       - name: Install pkgconf
-        run: vcpkg install pkgconf
+        run: choco install pkgconfiglite
         
       - name: Install dependencies
         shell: msys2 {0}
