@@ -36,11 +36,11 @@ jobs:
         working-directory: ${{ github.workspace }}\melonDS
         shell: cmd
         env:
-          LLVM_DIR: "C:\Program Files\LLVM\bin"
+          LLVM_DIR: "C:/Program Files/LLVM/bin"
         run: |
           mkdir build
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 -DENABLE_GDBSTUB=OFF ^
-          -DCMAKE_PREFIX_PATH=D:\a\_temp\msys64\ucrt64 -DCMAKE_C_COMPILER=${{ env.LLVM_DIR}}\clang.exe -DCMAKE_CXX_COMPILER=${{ env.LLVM_DIR}}\clang++.exe -DCMAKE_RC_COMPILER=${{ env.LLVM_DIR}}\llvm-rc.exe
+          -DCMAKE_PREFIX_PATH=D:\a\_temp\msys64\ucrt64 -DCMAKE_C_COMPILER=${{ env.LLVM_DIR}}/clang.exe -DCMAKE_CXX_COMPILER=${{ env.LLVM_DIR}}/clang++.exe -DCMAKE_RC_COMPILER=${{ env.LLVM_DIR}}/llvm-rc.exe
           cmake --build build
           
       - name: List dir
