@@ -28,7 +28,7 @@ jobs:
       - name: Download source code
         shell: cmd
         run: |
-          gita clone --revision=b86390e4428bf38ce4c1ce0e9ca446d6d25955e8 https://github.com/melonDS-emu/melonDS
+          git clone --revision=b86390e4428bf38ce4c1ce0e9ca446d6d25955e8 https://github.com/melonDS-emu/melonDS
           git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
           
       - name: Build
