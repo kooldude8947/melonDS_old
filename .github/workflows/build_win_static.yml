@@ -17,8 +17,6 @@ jobs:
         with:
           msystem: ucrt64
           update: false
-          install: >-
-            SDL2
         
       - name: Install pkgconf
         run: choco install pkgconfiglite
@@ -26,11 +24,15 @@ jobs:
       - name: Install dependencies
         shell: msys2 {0}
         run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,SDL2,libarchive,enet,zstd,faad2}
+
+      - name: List dir
+        shell: cmd
+        run: dir /S
         
       - name: Download source code
         shell: cmd
         run: |
-          git clone --revision=b86390e4428bf38ce4c1ce0e9ca446d6d25955e8 https://github.com/melonDS-emu/melonDS
+          gita clone --revision=b86390e4428bf38ce4c1ce0e9ca446d6d25955e8 https://github.com/melonDS-emu/melonDS
           git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
           
       - name: Build
@@ -38,7 +40,7 @@ jobs:
         shell: cmd
         run: |
           mkdir build
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 -DENABLE_GDBSTUB=OFF
           cmake --build build
           
       - name: List dir
