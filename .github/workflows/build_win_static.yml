@@ -21,8 +21,6 @@ jobs:
       - name: List Clang
         shell: cmd
         run: |
-          echo "Dir 1..."
-          dir /S "C:/Program Files (x86)/LLVM"
           echo "Dir 2..."
           dir /S "C:\Program Files\LLVM"
           
