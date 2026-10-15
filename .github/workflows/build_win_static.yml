@@ -22,7 +22,7 @@ jobs:
           git clone --revision=b86390e4428bf38ce4c1ce0e9ca446d6d25955e8 https://github.com/melonDS-emu/melonDS
           git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
           echo "List dir..."
-          dir
+          dir melonDS
           
       - name: Restore vcpkg cache
         uses: actions/cache/restore@v6
