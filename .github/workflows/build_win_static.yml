@@ -17,14 +17,11 @@ jobs:
         with:
           msystem: ucrt64
           update: true
-          install: >-
-            enet
-            faad2
-            libarchive
-            SDL2
-            toolchain
-            zstd
-      
+
+      - name: Install dependencies
+        shell: msys2 {0}
+        run: pacman -S mingw-w64-ucrt-x86_64-{toolchain,SDL2,libarchive,enet,zstd,faad2}
+        
       - name: Download source code
         shell: cmd
         run: |
