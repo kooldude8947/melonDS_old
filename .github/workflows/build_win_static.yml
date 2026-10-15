@@ -27,7 +27,7 @@ jobs:
 
       - name: List dir
         shell: cmd
-        run: dir /S
+        run: dir /S "C:\msys64"
         
       - name: Download source code
         shell: cmd
