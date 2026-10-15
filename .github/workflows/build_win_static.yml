@@ -39,6 +39,7 @@ jobs:
       - name: Build
         uses: lukka/run-cmake@v10
         with:
+          cmakeListsTxtPath: ${{ github.workspace }}\melonDS\CMakeLists.txt
           configurePreset: release-windows-x86_64
           configurePresetAdditionalArgs: "['-DENABLE_DEBUG_DEPS=OFF', '-DMELONDS_EMBED_BUILD_INFO=ON']"
           buildPreset: release-windows-x86_64
