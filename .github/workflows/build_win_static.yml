@@ -44,7 +44,7 @@ jobs:
         run: |
           mkdir build
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 -DENABLE_GDBSTUB=OFF ^
-          -G "Visual Studio 17 2022" -T ClangCL -A x64 -DCMAKE_PREFIX_PATH=D:\a\_temp\msys64
+          -G "Visual Studio 17 2022" -T ClangCL -A x64 -DCMAKE_PREFIX_PATH=D:\a\_temp\msys64\mingw64
           cmake --build build
           
       - name: List dir
