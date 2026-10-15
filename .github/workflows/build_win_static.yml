@@ -24,10 +24,6 @@ jobs:
       - name: Install dependencies
         shell: msys2 {0}
         run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,SDL2,libarchive,enet,zstd,faad2}
-
-      - name: List dir
-        shell: cmd
-        run: dir /S "D:\"
         
       - name: Download source code
         shell: cmd
@@ -40,7 +36,7 @@ jobs:
         shell: cmd
         run: |
           mkdir build
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 -DENABLE_GDBSTUB=OFF
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 -DENABLE_GDBSTUB=OFF -DCMAKE_PREFIX_PATH=D:\a\_temp\msys64\ucrt64
           cmake --build build
           
       - name: List dir
