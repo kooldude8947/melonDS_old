@@ -22,7 +22,7 @@ jobs:
           
       - name: Install dependencies
         shell: msys2 {0}
-        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,SDL2,libarchive,enet,zstd,faad2}
+        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,cmake,SDL2,libarchive,enet,zstd,faad2}
         
       - name: Download source code
         shell: cmd
@@ -34,15 +34,18 @@ jobs:
         shell: cmd
         run: xcopy /q /s /x /y ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
 
-      - name: Build
+      - name: Create build dir
         working-directory: ${{ github.workspace }}\melonDS
         shell: cmd
+        run: mkdir build
+        
+      - name: Build
+        working-directory: ${{ github.workspace }}\melonDS
+        shell: msys2 {0}
         env:
           LLVM_DIR: "C:/Program Files/LLVM/bin"
         run: |
-          mkdir build
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 -DENABLE_GDBSTUB=OFF ^
-          -T ClangCL -A x64 -DCMAKE_PREFIX_PATH=D:\a\_temp\msys64\ucrt64
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 -DENABLE_GDBSTUB=OFF
           cmake --build build
           
       - name: List dir
