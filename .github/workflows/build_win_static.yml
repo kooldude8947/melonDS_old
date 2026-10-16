@@ -34,7 +34,6 @@ jobs:
         shell: cmd
         run: xcopy /q /s /x /y ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
 
-      - uses: ilammy/msvc-dev-cmd@v1
       - name: Build
         working-directory: ${{ github.workspace }}\melonDS
         shell: cmd
