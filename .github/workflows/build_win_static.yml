@@ -22,7 +22,7 @@ jobs:
           
       - name: Install dependencies
         shell: msys2 {0}
-        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,cmake,SDL2,libarchive,enet,zstd,faad2}
+        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,cmake,SDL2,qt5-static,libarchive,enet,zstd,faad2}
         
       - name: Download source code
         shell: cmd
@@ -45,7 +45,7 @@ jobs:
         env:
           LLVM_DIR: "C:/Program Files/LLVM/bin"
         run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 -DENABLE_GDBSTUB=OFF
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 -DENABLE_GDBSTUB=OFF -T ClangCL -A x64
           cmake --build build
           
       - name: List dir
