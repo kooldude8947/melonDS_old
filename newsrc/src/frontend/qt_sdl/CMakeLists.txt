@@ -80,7 +80,7 @@ find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
 
 if (BUILD_STATIC)
-    list(APPEND PKG_CONFIG_EXECUTABLE "--static --larchive")
+    list(APPEND PKG_CONFIG_EXECUTABLE "--static -larchive")
 endif()
 
 pkg_check_modules(SDL2 REQUIRED IMPORTED_TARGET sdl2)
