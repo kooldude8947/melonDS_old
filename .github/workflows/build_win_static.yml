@@ -25,7 +25,9 @@ jobs:
           
           $libarchive_archive_file = "${{ github.workspace }}\external_libs\libarchive-v${{ env.libarchive_version }}-win64.zip"
           Invoke-WebRequest -Uri https://github.com/libarchive/libarchive/releases/download/v${{ env.libarchive_version }}/libarchive-v${{ env.libarchive_version }}-win64.zip -OutFile $libarchive_archive_file
-          pacman --noconfirm -S mingw-w64-ucrt-x86_64-{SDL2,libarchive,enet,zstd,faad2}
+
+      - name: Pacman cmd
+        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{SDL2,libarchive,enet,zstd,faad2}
 
       - name: Install Visual Studio platform toolset v141
         shell: cmd
@@ -42,6 +44,9 @@ jobs:
         shell: cmd
         run: xcopy /q /s /x /y ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
 
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: 14.16
       - name: Build
         working-directory: ${{ github.workspace }}\melonDS
         shell: cmd
