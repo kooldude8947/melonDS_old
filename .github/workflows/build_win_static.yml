@@ -22,7 +22,7 @@ jobs:
           
       - name: Install dependencies
         shell: msys2 {0}
-        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,cmake,SDL2,qt5-static,libarchive,enet,zstd,faad2} "libarchive<=3.4.3"
+        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,cmake,SDL2,qt5-static,libarchive,enet,zstd,faad2} "mingw-w64-ucrt-x86_64-libarchive<=3.4.3"
         
       - name: Download source code
         shell: cmd
