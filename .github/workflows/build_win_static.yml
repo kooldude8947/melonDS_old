@@ -1,0 +1,53 @@
+name: melonDS Windows Static
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+env:
+   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+   
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v7
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          
+      - name: Install dependencies
+        shell: msys2 {0}
+        run: |
+          pacman --noconfirm -S mingw-w64-ucrt-x86_64-{toolchain,cmake,SDL2,qt5-static,libarchive,enet,zstd,faad2}
+        
+      - name: Download source code
+        shell: cmd
+        run: |
+          git clone --revision=b86390e4428bf38ce4c1ce0e9ca446d6d25955e8 https://github.com/melonDS-emu/melonDS
+
+      - name: Copy modified source code to original folders
+        shell: cmd
+        run: xcopy /q /s /x /y ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
+
+      - name: Create build dir
+        working-directory: ${{ github.workspace }}\melonDS
+        shell: cmd
+        run: mkdir build
+        
+      - name: Build
+        working-directory: ${{ github.workspace }}\melonDS
+        shell: msys2 {0}
+        env:
+          LLVM_DIR: "C:/Program Files/LLVM/bin"
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DENABLE_GDBSTUB=OFF -DENABLE_DEBUG_DEPS=OFF
+          cmake --build build
+          
+      - name: List dir
+        shell: cmd
+        run: dir "${{ github.workspace }}\melonDS\build"
