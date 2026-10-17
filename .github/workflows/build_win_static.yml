@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v7          
       - name: Install dependencies
         run: |
-          vcpkg install libarchive:x64-mingw-static-release@3.6.2#0 --overlay-triplets ${{github.workspace}}
+          vcpkg install libarchive:x64-mingw-static-release@3.6.2 --overlay-triplets ${{github.workspace}}
           
       - name: Install dependencies again
         run: |
