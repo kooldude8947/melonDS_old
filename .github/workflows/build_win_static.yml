@@ -21,33 +21,23 @@ jobs:
           vcpkg install enet faad2 libarchive sdl2 zstd:x64-mingw-static-release --overlay-triplets ${{github.workspace}} --overlay-ports ${{github.workspace}}\ports
           choco install pkgconfiglite
           
-      - name: Install Visual Studio platform toolset v141
-        shell: cmd
-        run: |
-          "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\setup.exe" modify --quiet --norestart --includeRecommended --installPath "C:\Program Files\Microsoft Visual Studio\2022\Enterprise" --channelId VisualStudio.15.Release --add Microsoft.VisualStudio.Component.VC.v141.x86.x64
-          
       - name: Download source code
         shell: cmd
         run: |
           git clone https://github.com/melonDS-emu/melonDS
           git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
 
-      - name: Copy modified source code to original folders
-        shell: cmd
-        run: xcopy /q /s /x /y ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
-
       - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          toolset: 14.16
       - name: Build
         working-directory: ${{ github.workspace }}\melonDS
         shell: cmd
         run: |
           mkdir build
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DENABLE_GDBSTUB=OFF -DENABLE_DEBUG_DEPS=OFF ^
-          -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5
+          -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 ^
+          -G "MSYS Makefiles"
           cmake --build build
           
       - name: List dir
         shell: cmd
-        run: dir "${{ github.workspace }}\melonDS\build"
+        run: dir /S "${{ github.workspace }}\melonDS\build"
