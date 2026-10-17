@@ -18,7 +18,8 @@ jobs:
       - uses: actions/checkout@v7          
       - name: Install dependencies
         run: |
-          vcpkg install libarchive:x64-mingw-static-release --overlay-triplets ${{github.workspace}} --overlay-ports ${{github.workspace}}/ports
+          vcpkg install enet,faad2,libarchive,sdl2,zstd:x64-mingw-static-release --overlay-triplets ${{github.workspace}} --overlay-ports ${{github.workspace}}\ports
+          choco install pkgconfiglite
           
       - name: Install dependencies again
         run: |
@@ -29,9 +30,6 @@ jobs:
           
           $libarchive_archive_file = "${{ github.workspace }}\external_libs\libarchive-v${{ env.libarchive_version }}-win64.zip"
           Invoke-WebRequest -Uri https://github.com/libarchive/libarchive/releases/download/v${{ env.libarchive_version }}/libarchive-v${{ env.libarchive_version }}-win64.zip -OutFile $libarchive_archive_file
-
-      - name: Pacman cmd
-        run: pacman --noconfirm -S mingw-w64-ucrt-x86_64-{SDL2,libarchive,enet,zstd,faad2}
 
       - name: Install Visual Studio platform toolset v141
         shell: cmd
