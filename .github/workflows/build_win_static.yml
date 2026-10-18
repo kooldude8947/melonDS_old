@@ -23,7 +23,7 @@ jobs:
       - name: Download source code
         shell: cmd
         run: |
-          gita clone https://github.com/melonDS-emu/melonDS
+          git clone https://github.com/melonDS-emu/melonDS
           git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
 
       - name: Copy modified source code to original folders
