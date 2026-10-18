@@ -20,10 +20,14 @@ jobs:
           vcpkg install enet faad2 libarchive sdl2 zstd:x64-mingw-static-release --overlay-triplets ${{github.workspace}} --overlay-ports ${{github.workspace}}\ports
           choco install pkgconfiglite
           
+      - name: List enet
+        shell: cmd
+        run: echo "Listing enet directory..." && dir /S "C:\vcpkg\packages\enet_x64-windows"
+        
       - name: Download source code
         shell: cmd
         run: |
-          git clone https://github.com/melonDS-emu/melonDS
+          gita clone https://github.com/melonDS-emu/melonDS
           git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
 
       - name: Copy modified source code to original folders
