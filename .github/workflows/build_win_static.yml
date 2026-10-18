@@ -19,6 +19,10 @@ jobs:
         run: |
           vcpkg install enet faad2 libarchive sdl2 zstd:x64-mingw-static-release --overlay-triplets ${{github.workspace}} --overlay-ports ${{github.workspace}}\ports
           choco install pkgconfiglite
+
+      - name: List vcpkg
+        shell: cmd
+        run: dir /S "C:\vcpkg\packages"
         
       - name: Download source code
         shell: cmd
