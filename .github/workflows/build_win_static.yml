@@ -1,0 +1,52 @@
+name: melonDS Windows Static
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+env:
+   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+   
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v7          
+      - name: Install dependencies
+        run: |
+          vcpkg install dirent enet faad2 libarchive sdl2 zstd:x64-mingw-static-release --overlay-triplets ${{github.workspace}} --overlay-ports ${{github.workspace}}\ports
+          choco install pkgconfiglite
+
+      - name: List vcpkg
+        shell: cmd
+        run: dir /S "C:\vcpkg\packages"
+        
+      - name: Download source code
+        shell: cmd
+        run: |
+          git clone https://github.com/melonDS-emu/melonDS
+          git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
+
+      - name: Copy modified source code to original folders
+        shell: cmd
+        run: xcopy /q /s /x /y ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
+
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Build
+        working-directory: ${{ github.workspace }}\melonDS
+        shell: cmd
+        run: |
+          mkdir build
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DENABLE_GDBSTUB=OFF ^
+          -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 ^
+          -Dunofficial-enet_DIR=C:\vcpkg\packages\enet_x64-windows\share\unofficial-enet ^
+          -DSDL2_DIR=C:\vcpkg\packages\sdl2_x64-windows\share\sdl2 ^
+          -T ClangCL -A x64
+          cmake --build build
+          
+      - name: List dir
+        shell: cmd
+        run: dir /S "${{ github.workspace }}\melonDS\build"
