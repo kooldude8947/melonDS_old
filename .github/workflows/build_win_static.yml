@@ -9,7 +9,6 @@ on:
       - main
 env:
    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-   libarchive_version: 3.6.2
    
 jobs:
   build:
@@ -26,6 +25,10 @@ jobs:
         run: |
           git clone https://github.com/melonDS-emu/melonDS
           git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
+
+      - name: Copy modified source code to original folders
+        shell: cmd
+        run: xcopy /q /s /x /y ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
 
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Build
