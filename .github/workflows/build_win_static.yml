@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v7          
       - name: Install dependencies
         run: |
-          vcpkg install enet faad2 libarchive sdl2 zstd:x64-mingw-static-release --overlay-triplets ${{github.workspace}} --overlay-ports ${{github.workspace}}\ports
+          vcpkg install dirent enet faad2 libarchive sdl2 zstd:x64-mingw-static-release --overlay-triplets ${{github.workspace}} --overlay-ports ${{github.workspace}}\ports
           choco install pkgconfiglite
 
       - name: List vcpkg
