@@ -83,11 +83,7 @@ if (BUILD_STATIC)
     list(APPEND PKG_CONFIG_EXECUTABLE "--static")
 endif()
 
-pkg_check_modules(LibArchive REQUIRED IMPORTED_TARGET libarchive)
-pkg_check_modules(Zstd REQUIRED IMPORTED_TARGET libzstd)
 pkg_check_modules(Faad REQUIRED IMPORTED_TARGET faad2)
-
-fix_interface_includes(PkgConfig::SDL2 PkgConfig::LibArchive)
 
 add_compile_definitions(ARCHIVE_SUPPORT_ENABLED)
 
@@ -190,7 +186,7 @@ else()
     target_include_directories(melonDS PUBLIC ${Qt5Gui_PRIVATE_INCLUDE_DIRS})
 endif()
 target_link_libraries(melonDS PRIVATE core)
-target_link_libraries(melonDS PRIVATE PkgConfig::SDL2 PkgConfig::LibArchive PkgConfig::Zstd PkgConfig::Faad)
+target_link_libraries(melonDS PRIVATE SDL2::SDL2 LibArchive::LibArchive zstd::libzstd PkgConfig::Faad)
 target_link_libraries(melonDS PRIVATE ${QT_LINK_LIBS} ${CMAKE_DL_LIBS})
 
 if (WIN32)
