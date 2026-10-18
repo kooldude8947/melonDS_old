@@ -43,6 +43,7 @@ jobs:
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DENABLE_GDBSTUB=OFF ^
           -DQt5_DIR=${{ github.workspace }}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 ^
           -Dunofficial-enet_DIR=C:\vcpkg\packages\enet_x64-windows\share\unofficial-enet ^
+          -DSDL2_DIR=C:\vcpkg\packages\sdl2_x64-windows\share\sdl2 ^
           -T ClangCL -A x64
           cmake --build build
           
