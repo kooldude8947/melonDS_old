@@ -19,12 +19,23 @@ jobs:
     steps:
       - name: Check out sources
         uses: actions/checkout@v7
+
+      - name: Install Windows 7 SDK
+        run: choco install windows-sdk-7.1
+
+      - name: List SDK files
+        shell: cmd
+        run: echo "Listing SDKs..." && dir /S "C:\Program Files (x86)\Windows Kits"
+
+      - name: Test
+        shell: cmd
+        run: ech
         
       - name: Install Visual Studio platform toolset v141
         shell: cmd
         run: |
           "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\setup.exe" modify --quiet --norestart --includeRecommended --installPath "C:\Program Files\Microsoft Visual Studio\2022\Enterprise" --channelId VisualStudio.15.Release --add Microsoft.VisualStudio.Component.VC.v141.x86.x64
-          
+        
       - name: Install dependencies
         shell: cmd
         run: |
