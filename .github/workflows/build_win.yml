@@ -42,4 +42,4 @@ jobs:
           toolset: 14.16
       - name: List files
         shell: cmd
-        run: dir /S C:\vcpkg\packages
+        run: dir /S vcpkg\packages
