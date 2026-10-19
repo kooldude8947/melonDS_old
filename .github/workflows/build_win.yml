@@ -1,0 +1,36 @@
+name: Build Windows MSVC
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  triplet: x64-windows-msvc-static
+  openssl_location: C:\Program Files\OpenSSL
+  sevenzip_location: C:\Program Files\7-Zip
+  
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v7
+        
+      - name: Install Visual Studio platform toolset v141
+        shell: cmd
+        run: |
+          "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\setup.exe" modify --quiet --norestart --includeRecommended --installPath "C:\Program Files\Microsoft Visual Studio\2022\Enterprise" --channelId VisualStudio.15.Release --add Microsoft.VisualStudio.Component.VC.v141.x86.x64
+          
+      - name: Install dependencies
+        run: vcpkg install dirent enet faad2 libarchive sdl2:${{env.triplet}}
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: 14.16
+      - name: List files
+        shell: cmd
+        run: dir /S C:\vcpkg\packages
