@@ -31,7 +31,11 @@ jobs:
           git clone https://github.com/microsoft/vcpkg
           cd vcpkg
           copy /y /v ${{github.workspace}}\${{ env.triplet }}.cmake triplets
-          vcpkg install dirent enet faad2 libarchive sdl2:${{env.triplet}}
+          vcpkg install dirent:${{env.triplet}}
+          vcpkg install enet:${{env.triplet}}
+          vcpkg install faad2:${{env.triplet}}
+          vcpkg install libarchive:${{env.triplet}}
+          vcpkg install sdl2:${{env.triplet}}
 
       - uses: ilammy/msvc-dev-cmd@v1
         with:
