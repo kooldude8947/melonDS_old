@@ -1,0 +1,25 @@
+name: Test CMake
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  triplet: x64-windows-msvc-static
+  
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v7
+        
+      - name: Install dependencies
+        shell: cmd
+        run: |
+          mkdir build
+          cmake -S . -B build
