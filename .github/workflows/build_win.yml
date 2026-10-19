@@ -22,4 +22,4 @@ jobs:
         shell: cmd
         run: |
           mkdir build
-          cmake -S . -B build
+          cmake -S . -B build -DCMAKE_SYSTEM_VERSION=6.1.7601
