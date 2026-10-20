@@ -50,7 +50,7 @@ jobs:
         shell: cmd
         run: |
           mkdir build
-          cmake -S . -B build ^
+          cmake -S . -B build -T ClangCL -A x64 ^
           -DCMAKE_BUILD_TYPE=Release ^
           -DCMAKE_C_COMPILER=clang.exe ^
           -DCMAKE_CXX_COMPILER=clang++.exe ^
