@@ -50,11 +50,11 @@ jobs:
         shell: cmd
         run: |
           mkdir build
-          cmake -S . -B build -T ClangCL -A x64 ^
+          cmake -S . -B build -G Ninja ^
           -DCMAKE_BUILD_TYPE=Release ^
-          -DCMAKE_C_COMPILER="C:\Program Files\LLVM\bin\clang.exe" ^
-          -DCMAKE_CXX_COMPILER="C:\Program Files\LLVM\bin\clang++.exe" ^
-          -DCMAKE_RC_COMPILER="C:\Program Files\LLVM\bin\llvm-rc.exe" ^
+          -DCMAKE_C_COMPILER="C:/Program Files/LLVM/bin/clang.exe" ^
+          -DCMAKE_CXX_COMPILER="C:/Program Files/LLVM/bin/clang++.exe" ^
+          -DCMAKE_RC_COMPILER="C:/Program Files/LLVM/bin/llvm-rc.exe" ^
           -DENABLE_DEBUG_DEPS=OFF ^
           -DMELONDS_EMBED_BUILD_INFO=OFF ^
           -DENABLE_GDBSTUB=OFF ^
