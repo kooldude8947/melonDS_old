@@ -1,0 +1,34 @@
+name: Build Windows MSVC
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Check out sources
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        env:
+          libarchive_version: 253b8aa8478061c9b26f168c9e1a6e2fe5f87766
+          triplet: x64-windows-static-md-release
+        working-directory: C:\vcpkg
+        shell: cmd
+        run: |
+          git checkout ${{env.libarchive_version}} -- ports/libarchive
+          vcpkg install libarchive:${{ env.triplet }}
+          vcpkg install dirent:${{env.triplet}}
+          vcpkg install enet:${{env.triplet}}
+          vcpkg install faad2:${{env.triplet}}
+          vcpkg install pkgconf:${{env.triplet}}
+          vcpkg install sdl2:${{env.triplet}}
+          vcpkg install zstd:${{env.triplet}}
+          dir /S C:\vcpkg\installed\${{env.triplet}}
