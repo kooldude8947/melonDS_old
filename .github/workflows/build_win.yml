@@ -22,4 +22,5 @@ jobs:
         shell: cmd
         run: |
           mkdir build
-          cmake -S . -B build -DCMAKE_SYSTEM_VERSION=6.1.7601 -T LLVM_v143 -A x64
+          dir /S "C:\Program Files\LLVM"
+          cmake -S . -B build -DCMAKE_SYSTEM_VERSION=6.1.7601 -T ClangCL -A x64
