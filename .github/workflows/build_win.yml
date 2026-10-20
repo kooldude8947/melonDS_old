@@ -12,7 +12,6 @@ jobs:
   build:
     runs-on: windows-2022
     steps:
-      - uses: ilammy/msvc-dev-cmd@v1
       - name: Check out sources
         uses: actions/checkout@v7
 
@@ -23,6 +22,7 @@ jobs:
         working-directory: C:\vcpkg
         shell: cmd
         run: |
+          choco install pkgconfiglite
           git checkout ${{env.libarchive_version}} -- ports/libarchive
           vcpkg install libarchive:${{ env.triplet }}
           vcpkg install dirent:${{env.triplet}}
@@ -32,3 +32,15 @@ jobs:
           vcpkg install sdl2:${{env.triplet}}
           vcpkg install zstd:${{env.triplet}}
           dir /S C:\vcpkg\installed\${{env.triplet}}
+
+      - name: Download source code
+        shell: cmd
+        env:
+          melonDS_commit: 906e9ebb27da8c6a715cd7abab4abfe8a8d29427
+        run: |
+          git clone --revision ${{env.melonDS_commit}} https://github.com/melonDS-emu/melonDS
+          git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
+
+      - name: Copy modified source code to original folders
+        shell: cmd
+        run: xcopy /h /q /s /x /y ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
