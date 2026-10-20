@@ -22,4 +22,4 @@ jobs:
         shell: cmd
         run: |
           mkdir build
-          cmake -S . -B build -DCMAKE_SYSTEM_VERSION=6.1.7601
+          cmake -S . -B build -DCMAKE_SYSTEM_VERSION=6.1.7601 -T ClangGNU -A x64
