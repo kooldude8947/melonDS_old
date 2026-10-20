@@ -9,7 +9,6 @@ on:
       - main
 
 env:
-  triplet: x64-windows-msvc-static
   openssl_location: C:\Program Files\OpenSSL
   sevenzip_location: C:\Program Files\7-Zip
   
@@ -18,19 +17,20 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          sdk: 6.1.7601
       - name: Check out sources
         uses: actions/checkout@v7
 
       - name: Install dependencies
+        env:
+          libarchive_version: 253b8aa8478061c9b26f168c9e1a6e2fe5f87766
+          triplet: x64-windows-msvc-static
         shell: cmd
         run: |
           git clone https://github.com/microsoft/vcpkg
           cd vcpkg
+          git checkout ${{env.libarchive_version}} -- ports/libarchive
           copy /y /v ${{github.workspace}}\${{ env.triplet }}.cmake triplets
+          vcpkg install libarchive libarchive:${{ env.triplet }}
+
           vcpkg install dirent:${{env.triplet}}
-          vcpkg install enet:${{env.triplet}}
-          vcpkg install faad2:${{env.triplet}}
-          vcpkg install libarchive:${{env.triplet}}
-          vcpkg install sdl2:${{env.triplet}}
+          dir /S installed/${{ env.triplet }}
