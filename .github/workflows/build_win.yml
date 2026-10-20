@@ -23,4 +23,4 @@ jobs:
         run: |
           mkdir build
           dir /S "C:\Program Files\LLVM"
-          cmake -S . -B build -DCMAKE_SYSTEM_VERSION=6.1.7601 -G Ninja
+          cmake -S . -B build -DCMAKE_SYSTEM_VERSION=6.1.7601 -G Ninja -T Clang
