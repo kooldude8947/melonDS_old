@@ -59,6 +59,6 @@ jobs:
           -DMELONDS_EMBED_BUILD_INFO=OFF ^
           -DBUILD_STATIC=ON ^
           -DUSE_QT6=OFF ^
-          -DQt5_DIR=${{github.workspace}}\Qt-Win-Shared\Qt\Qt-5.15.19\lib\cmake\Qt5 ^
+          -DQt5_DIR=${{github.workspace}}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5 ^
           -DCMAKE_PREFIX_PATH=C:\vcpkg\installed\${{env.triplet}}
           cmake --build build
