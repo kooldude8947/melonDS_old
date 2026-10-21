@@ -22,5 +22,6 @@ jobs:
       - name: Compile
         shell: cmd
         run: |
+          dir /S C:\msys64
           mkdir build
           cmake -S . -B build -DCMAKE_SYSTEM_VERSION=6.1.7601 -G Ninja -DCMAKE_CXX_COMPILER=clang++.exe
