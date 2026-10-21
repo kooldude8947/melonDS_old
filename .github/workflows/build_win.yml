@@ -14,6 +14,13 @@ jobs:
   build:
     runs-on: windows-2022
     steps:
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ucrt64
+          update: true
+          pacboy: gcc:p cmake:p ninja:p make:p
+          
       - name: Check out sources
         uses: actions/checkout@v7
 
@@ -40,6 +47,8 @@ jobs:
         run: |
           git clone --revision ${{env.melonDS_commit}} https://github.com/melonDS-emu/melonDS
           git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
+          cd melonDS
+          mkdir build
 
       - name: Copy modified source code to original folders
         shell: cmd
@@ -47,9 +56,8 @@ jobs:
 
       - name: Build
         working-directory: ${{github.workspace}}\melonDS
-        shell: cmd
+        shell: msys2 {0}
         run: |
-          mkdir build
           cmake -S . -B build -G Ninja ^
           -DCMAKE_BUILD_TYPE=Release ^
           -DCMAKE_C_COMPILER=clang.exe ^
