@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 
+set(ARCH "-target x86_64-w64-mingw32")
+set(CMAKE_ASM_FLAGS "${ARCH}")
+set(CMAKE_C_FLAGS "${ARCH}")
+set(CMAKE_CXX_FLAGS "${ARCH}")
+
 cmake_policy(VERSION 3.15)
 if (POLICY CMP0076)
     cmake_policy(SET CMP0076 NEW)
