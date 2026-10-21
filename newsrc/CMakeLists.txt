@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -target x86_64-w64-mingw32")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -target x86_64-w64-mingw32")
+
 cmake_policy(VERSION 3.15)
 if (POLICY CMP0076)
     cmake_policy(SET CMP0076 NEW)
