@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(ARCH "-target x86_64-w64-mingw32")
+set(ARCH "-target x86_64-pc-windows-gnu")
 set(CMAKE_ASM_FLAGS "${ARCH}")
 set(CMAKE_C_FLAGS "${ARCH}")
 set(CMAKE_CXX_FLAGS "${ARCH}")
