@@ -17,10 +17,10 @@ jobs:
     steps:
       - name: Check out sources
         uses: actions/checkout@v7
-        
+
+      - uses: ilammy/msvc-dev-cmd@v1
       - name: Compile
         shell: cmd
         run: |
           mkdir build
-          dir /S "C:\Program Files\LLVM"
           cmake -S . -B build -DCMAKE_SYSTEM_VERSION=6.1.7601 -G Ninja -DCMAKE_CXX_COMPILER=clang++.exe
