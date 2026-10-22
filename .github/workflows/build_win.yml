@@ -11,52 +11,38 @@ env:
   MELONDS_GIT_BRANCH: ${{ github.ref }}
   MELONDS_GIT_HASH: ${{ github.sha }}
   MELONDS_BUILD_PROVIDER: GitHub Actions
-
+   
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        arch:
-          - name: x86_64
-            image: windows-2025-vs2026
-
-    name: ${{ matrix.arch.name }}
-    runs-on: ${{ matrix.arch.image }}
-    env:
-      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkg_cache,readwrite
-      
+    runs-on: windows-2025-vs2026
     steps:
-    - name: Download source code
-      shell: cmd
-      run: git clone --branch master-qt5 --single-branch https://github.com/${{github.repository_owner}}/melonDS .
-        
-    - name: Restore vcpkg cache
-      uses: actions/cache/restore@v4
-      with:
-        path: ${{ github.workspace }}/vcpkg_cache
-        key: vcpkg-${{ matrix.arch.name }}-windows-${{ hashFiles('vcpkg.json') }}
-        restore-keys: vcpkg-${{ matrix.arch.name }}-windows-
-        
-    - name: Set up vcpkg
-      uses: lukka/run-vcpkg@v11
-      with:
-        vcpkgJsonGlob: vcpkg.json
-        
-    - name: Build
-      uses: lukka/run-cmake@v10
-      with:
-        configurePreset: release-windows-${{ matrix.arch.name }}
-        configurePresetAdditionalArgs: "['-DENABLE_DEBUG_DEPS=OFF', '-DMELONDS_EMBED_BUILD_INFO=ON', '-DUSE_QT6=OFF']"
-        buildPreset: release-windows-${{ matrix.arch.name }}
-        
-    - uses: actions/upload-artifact@v7
-      with:
-        name: melonDS-windows-${{ matrix.arch.name }}
-        path: .\build\release-windows-${{ matrix.arch.name }}\melonDS.exe
-        
-    - name: Save vcpkg cache
-      uses: actions/cache/save@v4
-      with:
-        path: ${{ github.workspace }}/vcpkg_cache
-        key: vcpkg-${{ matrix.arch.name }}-windows-${{ hashFiles('vcpkg.json') }}
+      - uses: actions/checkout@v7
+      - name: Download source code
+        shell: cmd
+        run: |
+          git clone https://github.com/melonDS-emu/melonDS
+          xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
+          rmdir /s ${{ github.workspace }}\newsrc
+          xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\melonDS ${{ github.workspace }}
+          rmdir /s ${{ github.workspace }}\melonDS
+          git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
+  
+      - name: Set up vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: vcpkg.json
+          
+      - name: Build
+        uses: lukka/run-cmake@v10
+        env:
+          Qt5_dir: ${{github.workspace}}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5
+        with:
+          configurePreset: release-windows-x86_64
+          configurePresetAdditionalArgs: "['-DENABLE_DEBUG_DEPS=OFF', '-DMELONDS_EMBED_BUILD_INFO=ON', '-DUSE_QT6=OFF', '-DQt5_DIR=${{env.Qt5_dir}}']"
+          buildPreset: release-windows-x86_64
+
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: melonDS-windows-x86_64
+          path: .\build\release-windows-x86_64\melonDS.exe
