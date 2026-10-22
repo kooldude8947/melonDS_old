@@ -36,7 +36,7 @@ jobs:
       shell: cmd
       run: |
         xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\newsrc ${{ github.workspace }}
-        rmdir /s ${{ github.workspace }}\newsrc
+        rmdir /q /s ${{ github.workspace }}\newsrc
         
     - name: Restore vcpkg cache
       uses: actions/cache/restore@v4
