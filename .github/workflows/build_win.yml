@@ -29,14 +29,7 @@ jobs:
     steps:
     - name: Download source code
       shell: cmd
-      run: git clone https://github.com/melonDS-emu/melonDS .
-
-    - uses: actions/checkout@v7
-    - name: Checkout repo
-      shell: cmd
-      run: |
-        xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\newsrc ${{ github.workspace }}
-        rmdir /q /s ${{ github.workspace }}\newsrc
+      run: git clone --branch master-qt5 --single-branch https://github.com/${{github.repository_owner}}/melonDS .
         
     - name: Restore vcpkg cache
       uses: actions/cache/restore@v4
