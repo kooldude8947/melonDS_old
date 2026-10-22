@@ -1,0 +1,48 @@
+name: melonDS Windows
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+env:
+  MELONDS_GIT_BRANCH: ${{ github.ref }}
+  MELONDS_GIT_HASH: ${{ github.sha }}
+  MELONDS_BUILD_PROVIDER: GitHub Actions
+   
+jobs:
+  build:
+    runs-on: windows-2025-vs2026
+    steps:
+      - uses: actions/checkout@v7
+      - name: Download source code
+        shell: cmd
+        run: |
+          git clone https://github.com/melonDS-emu/melonDS
+          xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
+          rmdir /s ${{ github.workspace }}\newsrc
+          xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\melonDS ${{ github.workspace }}
+          rmdir /s ${{ github.workspace }}\melonDS
+          git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
+  
+      - name: Set up vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: vcpkg.json
+          
+      - name: Build
+        uses: lukka/run-cmake@v10
+        env:
+          Qt5_dir: ${{github.workspace}}\Qt-Win-Static\Qt\Qt-5.15.19\lib\cmake\Qt5
+        with:
+          configurePreset: release-windows-x86_64
+          configurePresetAdditionalArgs: "['-DENABLE_DEBUG_DEPS=OFF', '-DMELONDS_EMBED_BUILD_INFO=ON', '-DUSE_QT6=OFF', '-DQt5_DIR=${{env.Qt5_dir}}']"
+          buildPreset: release-windows-x86_64
+
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: melonDS-windows-x86_64
+          path: .\build\release-windows-x86_64\melonDS.exe
