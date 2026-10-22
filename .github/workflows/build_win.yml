@@ -22,9 +22,13 @@ jobs:
         run: |
           git clone https://github.com/melonDS-emu/melonDS
           xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
+          echo "Deleting newsrc..."
           rmdir /s ${{ github.workspace }}\newsrc
+          echo "Copying melonDS to root..."
           xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\melonDS ${{ github.workspace }}
+          echo "Deleting original melonDS..."
           rmdir /s ${{ github.workspace }}\melonDS
+          echo "All operations done."
   
       - name: Set up vcpkg
         uses: lukka/run-vcpkg@v11
