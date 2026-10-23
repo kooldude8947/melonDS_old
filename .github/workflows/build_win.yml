@@ -22,25 +22,13 @@ jobs:
           msystem: CLANG64
           update: false
 
-      - name: Download dependencies
-        run: |
-          git config --local core.autocrlf false
-          git clone --revision 75bb29d4ff88fbcc64babcb74fbcac626c01b426 https://github.com/msys2/MSYS2-packages
-          
-          $AllProtocols = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'
-          [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
-          
-          $ProgressPreference = 'SilentlyContinue'
-          Invoke-WebRequest -Uri https://archive.archlinux.org/packages/l/libarchive/libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig -OutFile ${{github.workspace}}\MSYS2-packages\libarchive\libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig
-          
       - name: Install dependencies
-        working-directory: ${{github.workspace}}\MSYS2-packages\libarchive
         shell: msys2 {0}
         run: |
           gpg --recv-keys DB2C7CF1B4C265FAEF56E3FC5848A18B8F14184B
           pacman -S --noconfirm --needed base-devel
           makepkg-mingw --cleanbuild --syncdeps --force --noconfirm
-          pacman --noconfirm -U libarchive-3.6.2-2-x86_64.pkg.tar.zst
+          pacman --noconfirm --skippgpcheck -U libarchive-3.6.2-2-x86_64.pkg.tar.zst
 
       - name: Check version
         shell: msys2 {0}
