@@ -21,12 +21,6 @@ jobs:
         with:
           msystem: CLANG64
           update: false
-
-      - name: Upload conf
-        uses: actions/upload-artifact@v7
-        with:
-          name: conf-file
-          path: ${{github.workspace}}\MSYS2-packages\pacman\makepkg.conf
           
       - name: Download dependencies
         run: |
@@ -54,6 +48,12 @@ jobs:
           gpga --recv-keys DB2C7CF1B4C265FAEF56E3FC5848A18B8F14184B
           pacman -S --noconfirm --needed base-devel
           makepkg-mingw --cleanbuild --syncdeps --force --noconfirm
+
+      - name: Upload conf
+        uses: actions/upload-artifact@v7
+        with:
+          name: conf-file
+          path: ${{github.workspace}}\MSYS2-packages\pacman\makepkg.conf
           
       - name: Check version
         shell: msys2 {0}
