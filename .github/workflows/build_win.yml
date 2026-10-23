@@ -43,7 +43,7 @@ jobs:
         run: |
           gpg --recv-keys DB2C7CF1B4C265FAEF56E3FC5848A18B8F14184B
           pacman -S --noconfirm --needed base-devel
-          makepkg-mingw --cleanbuild --syncdeps --force --noconfirm
+          makepkg --cleanbuild --syncdeps --force --noconfirm
           pacman --noconfirm -U libarchive-3.6.2-2-x86_64.pkg.tar.zst
 
       - name: Check version
