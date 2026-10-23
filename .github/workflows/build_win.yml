@@ -1,0 +1,79 @@
+name: melonDS Windows
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+env:
+  MELONDS_GIT_BRANCH: ${{ github.ref }}
+  MELONDS_GIT_HASH: ${{ github.sha }}
+  MELONDS_BUILD_PROVIDER: GitHub Actions
+   
+jobs:
+  build:
+    runs-on: windows-2025-vs2026
+    steps:
+      - uses: actions/checkout@v7
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANG64
+          update: false
+        
+      - name: Download dependencies
+        run: |
+          git config --local core.autocrlf false
+          git clone --revision 75bb29d4ff88fbcc64babcb74fbcac626c01b426 https://github.com/msys2/MSYS2-packages
+          
+          $AllProtocols = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'
+          [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
+          
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest -Uri https://archive.archlinux.org/packages/l/libarchive/libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig -OutFile ${{github.workspace}}\MSYS2-packages\libarchive\libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig
+
+      - name: Copy MSYS2 conf-file
+        shell: cmd
+        run: copy /v /y ${{github.workspace}}\makepkg.conf D:\a\_temp\msys64\etc
+        
+      - name: Install dependencies
+        working-directory: ${{github.workspace}}\MSYS2-packages\libarchive
+        shell: msys2 {0}
+        run: |
+          gpg --recv-keys DB2C7CF1B4C265FAEF56E3FC5848A18B8F14184B
+          pacman -S --noconfirm --needed base-devel
+          makepkg --cleanbuild --syncdeps --force --noconfirm
+          pacman --noconfirm -U libarchive-3.6.2-2-x86_64.pkg.tar.zst
+
+      - name: Check version
+        shell: msys2 {0}
+        run: |
+          pacman -Qi libarchive
+          
+      - name: Download source code
+        shell: cmd
+        run: |
+          gita clone https://github.com/melonDS-emu/melonDS
+          xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
+          rmdir /s ${{ github.workspace }}\newsrc
+          xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\melonDS ${{ github.workspace }}
+          rmdir /s ${{ github.workspace }}\melonDS
+          mkdir build
+          git clone https://github.com/${{ github.repository_owner }}/Qt-Win-Static
+  
+      - name: Build
+        shell: msys2 {0}
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DENABLE_GDBSTUB=OFF -DENABLE_DEBUG_DEPS=OFF -DCMAKE_PREFIX_PATH=$MSYSTEM_PREFIX/qt5-static
+          cmake --build build
+
+      - name: List dir
+        shell: cmd
+        run: dir "${{ github.workspace }}\build"
+        
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: melonDS-windows-x86_64
+          path: .\build\melonDS.exe
