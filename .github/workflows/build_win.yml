@@ -22,13 +22,16 @@ jobs:
           msystem: CLANG64
           update: false
 
-      - name: List dir
-        shell: cmd
-        run: dir /S D:\
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: msys2-conf
+          path: D:\a\_temp\msys64\etc\makepkg.conf
+          include-hidden-files:: true
         
       - name: Download dependencies
         run: |
-          git config --local core.autocrlf false
+          gita config --local core.autocrlf false
           git clone --revision 75bb29d4ff88fbcc64babcb74fbcac626c01b426 https://github.com/msys2/MSYS2-packages
           
           $AllProtocols = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'
