@@ -25,6 +25,7 @@ jobs:
       - name: Install dependencies
         shell: msys2 {0}
         run: |
+          gpg --recv-keys 6D42BDD116E0068F
           pacman --noconfirm -U libarchive-3.6.2-2-x86_64.pkg.tar.zst
 
       - name: Check version
