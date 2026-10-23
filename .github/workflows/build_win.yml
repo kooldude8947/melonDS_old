@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         shell: msys2 {0}
         run: |
-          pacman -Syu
+          pacman -Syy
           pacman -Sy archlinux-keyring
           pacman --noconfirm -U https://archive.archlinux.org/packages/l/libarchive/libarchive-3.6.2-2-x86_64.pkg.tar.zst
 
