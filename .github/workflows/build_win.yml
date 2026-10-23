@@ -21,7 +21,7 @@ jobs:
         with:
           msystem: CLANG64
           update: false
-          install: enet
+          install: cmake
           
       - name: List dir
         shell: cmd
