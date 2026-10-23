@@ -25,12 +25,14 @@ jobs:
       - name: Install dependencies
         shell: msys2 {0}
         run: |
-          pacman --noconfirm -S mingw-w64-clang-x86_64-{toolchain,cmake,SDL2,qt5-static,libarchive,enet,zstd,faad2}
+          pacman --noconfirm -S mingw-w64-clang-x86_64-{toolchain,cmake,SDL2,qt5-static,enet,zstd,faad2}
+          pacman --noconfirm -S -U https://archive.archlinux.org/packages/l/libarchive/libarchive-3.6.2-2-x86_64.pkg.tar.zst
+          pacman -Qi libarchive
           
       - name: Download source code
         shell: cmd
         run: |
-          git clone https://github.com/melonDS-emu/melonDS
+          gita clone https://github.com/melonDS-emu/melonDS
           xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\newsrc ${{ github.workspace }}\melonDS
           rmdir /s ${{ github.workspace }}\newsrc
           xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\melonDS ${{ github.workspace }}
