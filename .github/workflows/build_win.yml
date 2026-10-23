@@ -21,23 +21,22 @@ jobs:
         with:
           msystem: CLANG64
           update: false
-          install: cmake
-          
-      - name: List dir
-        shell: cmd
-        run: |
-          echo "Listing dir..."
-          dir /S ${{github.workspace}}
-          echo "Listing MSYS2 dir..."
-          dir /S "D:\a\_temp\setup-msys2"
 
-      - name: Upload conf
-        uses: actions/upload-artifact@v7
-        with:
-          name: conf-file
-          path: ${{github.workspace}}\MSYS2-packages
-          include-hidden-files: true
+      - name: Download dependencies
+        run: |
+          git config --local core.autocrlf false
+          git clone --revision 75bb29d4ff88fbcc64babcb74fbcac626c01b426 https://github.com/msys2/MSYS2-packages
           
+          $AllProtocols = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'
+          [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
+          
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest -Uri https://archive.archlinux.org/packages/l/libarchive/libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig -OutFile ${{github.workspace}}\MSYS2-packages\libarchive\libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig
+
+      - name: Copy pacman conf-file
+        shell: cmd
+        run: /v /y copy ${{github.workspace}}\makepkg.conf ${{github.workspace}}\MSYS2-packages\pacman
+        
       - name: Install dependencies
         working-directory: ${{github.workspace}}\MSYS2-packages\libarchive
         shell: msys2 {0}
@@ -45,11 +44,11 @@ jobs:
           gpg --recv-keys DB2C7CF1B4C265FAEF56E3FC5848A18B8F14184B
           pacman -S --noconfirm --needed base-devel
           makepkg-mingw --cleanbuild --syncdeps --force --noconfirm
-          
+          pacman --noconfirm -U libarchive-3.6.2-2-x86_64.pkg.tar.zst
+
       - name: Check version
         shell: msys2 {0}
         run: |
-          pacman --noconfirm -U libarchive-3.6.2-2-x86_64.pkg.tar.zst
           pacman -Qi libarchive
           
       - name: Download source code
