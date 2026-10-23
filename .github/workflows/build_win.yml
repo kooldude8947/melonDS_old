@@ -21,30 +21,8 @@ jobs:
         with:
           msystem: CLANG64
           update: false
-
-      - name: Install dependencies
-        shell: msys2 {0}
-        run: |
-          pacman -S --noconfirm --needed base-devel
+          install: enet
           
-      - name: Upload conf
-        uses: actions/upload-artifact@v7
-        with:
-          name: conf-file
-          path: ${{github.workspace}}\MSYS2-packages\pacman
-          include-hidden-files: true
-          
-      - name: Download dependencies
-        run: |
-          gita config --local core.autocrlf false
-          git clone --revision 75bb29d4ff88fbcc64babcb74fbcac626c01b426 https://github.com/msys2/MSYS2-packages
-          
-          $AllProtocols = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'
-          [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
-          
-          $ProgressPreference = 'SilentlyContinue'
-          Invoke-WebRequest -Uri https://archive.archlinux.org/packages/l/libarchive/libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig -OutFile ${{github.workspace}}\MSYS2-packages\libarchive\libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig
-
       - name: List dir
         shell: cmd
         run: |
@@ -52,6 +30,13 @@ jobs:
           dir /S ${{github.workspace}}
           echo "Listing MSYS2 dir..."
           dir /S "D:\a\_temp\setup-msys2"
+
+      - name: Upload conf
+        uses: actions/upload-artifact@v7
+        with:
+          name: conf-file
+          path: ${{github.workspace}}\MSYS2-packages
+          include-hidden-files: true
           
       - name: Install dependencies
         working-directory: ${{github.workspace}}\MSYS2-packages\libarchive
