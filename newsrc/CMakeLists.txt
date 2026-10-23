@@ -1,112 +1,244 @@
-cmake_minimum_required(VERSION 3.16)
+set (CMAKE_CXX_STANDARD 17)
 
-cmake_policy(VERSION 3.15)
-if (POLICY CMP0076)
-    cmake_policy(SET CMP0076 NEW)
+include(FixInterfaceIncludes)
+
+add_library(core STATIC
+    ARCodeFile.cpp
+    ARDatabaseDAT.cpp
+    AREngine.cpp
+    ARM.cpp
+    ARM_InstrTable.h
+    ARMInterpreter.cpp
+    ARMInterpreter_ALU.cpp
+    ARMInterpreter_Branch.cpp
+    ARMInterpreter_LoadStore.cpp
+    CP15.cpp
+    CRC32.cpp
+    DMA.cpp
+    DMA_Timings.h
+    DMA_Timings.cpp
+    DSi.cpp
+    DSi_AES.cpp
+    DSi_Camera.cpp
+    DSi_DSP.cpp
+    DSi_I2C.cpp
+    DSi_I2S.cpp
+    DSi_NAND.cpp
+    DSi_NDMA.cpp
+    DSi_NWifi.cpp
+    DSi_SD.cpp
+    DSi_SPI_TSC.cpp
+    FATIO.cpp
+    FATStorage.cpp
+    FIFO.h
+    GBACart.cpp
+    GBACartMotionPak.cpp
+    GPU.cpp
+    GPU_Soft.cpp
+    GPU2D.cpp
+    GPU2D_Soft.cpp
+    GPU3D.cpp
+    GPU3D_Soft.cpp
+    GPU3D_Texcache.cpp
+    GPU3D_Texcache.h
+    Mic.cpp
+    NDS.cpp
+    NDSCart.cpp
+    Platform.h
+    ROMList.h
+    ROMList.cpp
+    FreeBIOS.h
+    FreeBIOS.cpp
+    RTC.cpp
+    Savestate.cpp
+    SPI.cpp
+    SPI_Firmware.cpp
+    SPU.cpp
+    types.h
+    Utils.cpp
+    Utils.h
+    Wifi.cpp
+    WifiAP.cpp
+
+    DSP_HLE/UcodeBase.cpp
+    DSP_HLE/AACUcode.cpp
+    DSP_HLE/G711Ucode.cpp
+    DSP_HLE/GraphicsUcode.cpp
+
+    NDSCart/CartCommon.cpp
+    NDSCart/CartRetail.cpp
+    NDSCart/CartRetailNAND.cpp
+    NDSCart/CartRetailIR.cpp
+    NDSCart/CartRetailBT.cpp
+    NDSCart/CartSD.cpp
+    NDSCart/CartHomebrew.cpp
+    NDSCart/CartR4.cpp
+
+    fatfs/ff.c
+    fatfs/ffsystem.c
+    fatfs/ffunicode.c
+    fatfs/ffconf.h
+
+    sha1/sha1.c
+    tiny-AES-c/aes.c
+    xxhash/xxhash.c
+
+    blip-buf/blip_buf.c)
+
+if (ENABLE_GDBSTUB)
+    message(NOTICE "Enabling GDB stub")
+    target_sources(core PRIVATE
+        debug/GdbStub.cpp
+        debug/GdbProto.cpp
+        debug/GdbCmds.cpp
+    )
 endif()
 
-set(CMAKE_POLICY_DEFAULT_CMP0069 NEW)
+if (ENABLE_OGLRENDERER)
+    add_subdirectory(OpenGL_shaders)
+    target_sources(core PRIVATE
+        GPU_OpenGL.cpp
+        GPU2D_OpenGL.cpp
+        GPU3D_OpenGL.cpp
+        GPU3D_Compute.cpp
+        GPU3D_TexcacheOpenGL.cpp
+        GPU3D_TexcacheOpenGL.h
+        OpenGLSupport.cpp)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/DefaultBuildFlags.cmake")
-set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version")
-
-option(USE_VCPKG "Use vcpkg for dependency packages" OFF)
-if (USE_VCPKG)
-	include(ConfigureVcpkg)
+    target_compile_definitions(core PUBLIC OGLRENDERER_ENABLED)
 endif()
 
-project(melonDS
-    VERSION 1.1
-    DESCRIPTION "DS emulator, sorta"
-    HOMEPAGE_URL "https://melonds.kuribo64.net"
-    LANGUAGES C CXX)
+if (ENABLE_JIT)
+    enable_language(ASM)
 
-include(CheckSymbolExists)
-include(CheckLibraryExists)
-include(CMakeDependentOption)
-include(CheckIPOSupported)
+    target_sources(core PRIVATE
+        ARM_InstrInfo.cpp
 
-include(SetupCCache)
-include(Sanitizers)
+        ARMJIT.cpp
+        ARMJIT_Memory.cpp
+        ARMJIT_Global.cpp
 
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-endif()
-
-function(detect_architecture symbol arch)
-    if (NOT DEFINED ARCHITECTURE)
-        set(CMAKE_REQUIRED_QUIET 1)
-        check_symbol_exists("${symbol}" "" ARCHITECTURE_${arch})
-        unset(CMAKE_REQUIRED_QUIET)
-
-        # The output variable needs to be unique across invocations otherwise
-        # CMake's crazy scope rules will keep it defined
-        if (ARCHITECTURE_${arch})
-            set(ARCHITECTURE "${arch}" PARENT_SCOPE)
-            set(ARCHITECTURE_${arch} 1 PARENT_SCOPE)
-            add_definitions(-DARCHITECTURE_${arch}=1)
-        endif()
+        dolphin/CommonFuncs.cpp)
+    
+    if (WIN32)
+        # Disable some memory mapping-related functions introduced in Windows 8
+        target_compile_definitions(core PRIVATE -D_WIN32_WINNT=_WIN32_WINNT_WIN7)
+        target_link_libraries(core PRIVATE onecore)
     endif()
-endfunction()
 
-detect_architecture("__x86_64__" x86_64)
-detect_architecture("__i386__" x86)
-detect_architecture("__arm__" ARM)
-detect_architecture("__aarch64__" ARM64)
+    if (CMAKE_SYSTEM_NAME STREQUAL "OpenBSD")
+        target_link_options(core PUBLIC -Wl,-z,wxneeded)
+    endif()
 
-cmake_dependent_option(ENABLE_JIT "Enable JIT recompiler" ON
-    "ARCHITECTURE STREQUAL x86_64 OR ARCHITECTURE STREQUAL ARM64" OFF)
-cmake_dependent_option(ENABLE_JIT_PROFILING "Enable JIT profiling with VTune" OFF "ENABLE_JIT" OFF)
-option(ENABLE_OGLRENDERER "Enable OpenGL renderer" ON)
+    if (ARCHITECTURE STREQUAL x86_64)
+        target_sources(core PRIVATE
+            dolphin/x64ABI.cpp
+            dolphin/x64CPUDetect.cpp
+            dolphin/x64Emitter.cpp
 
-check_ipo_supported(RESULT IPO_SUPPORTED)
-cmake_dependent_option(ENABLE_LTO_RELEASE "Enable link-time optimizations for release builds" ON "IPO_SUPPORTED" OFF)
-cmake_dependent_option(ENABLE_LTO "Enable link-time optimizations" OFF "IPO_SUPPORTED" OFF)
+            ARMJIT_x64/ARMJIT_Compiler.cpp
+            ARMJIT_x64/ARMJIT_ALU.cpp
+            ARMJIT_x64/ARMJIT_LoadStore.cpp
+            ARMJIT_x64/ARMJIT_Branch.cpp
 
-if (ENABLE_LTO_RELEASE)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+            ARMJIT_x64/ARMJIT_Linkage.S)
+    endif()
+    if (ARCHITECTURE STREQUAL ARM64)
+        target_sources(core PRIVATE
+            dolphin/Arm64Emitter.cpp
+            dolphin/MathUtil.cpp
+
+            ARMJIT_A64/ARMJIT_Compiler.cpp
+            ARMJIT_A64/ARMJIT_ALU.cpp
+            ARMJIT_A64/ARMJIT_LoadStore.cpp
+            ARMJIT_A64/ARMJIT_Branch.cpp
+
+            ARMJIT_A64/ARMJIT_Linkage.S)
+    endif()
 endif()
 
-if (ENABLE_LTO)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+target_include_directories(core INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
+
+set(MELONDS_VERSION_SUFFIX "$ENV{MELONDS_VERSION_SUFFIX}" CACHE STRING "Suffix to add to displayed melonDS version")
+option(MELONDS_EMBED_BUILD_INFO "Embed detailed build info into the binary" OFF)
+set(MELONDS_GIT_BRANCH "$ENV{MELONDS_GIT_BRANCH}" CACHE STRING "The Git branch used for this build")
+set(MELONDS_GIT_HASH "$ENV{MELONDS_GIT_HASH}" CACHE STRING "The hash of the Git commit")
+set(MELONDS_BUILD_PROVIDER "$ENV{MELONDS_BUILD_PROVIDER}" CACHE STRING "The name of the provider of this build")
+
+if (MELONDS_EMBED_BUILD_INFO)
+    target_compile_definitions(core PUBLIC MELONDS_EMBED_BUILD_INFO)
+    if (NOT MELONDS_GIT_BRANCH OR NOT MELONDS_GIT_HASH OR NOT MELONDS_BUILD_PROVIDER)
+        message(FATAL_ERROR "When embedding build information, all fields must be filled out. See src/CMakeLists.txt.")
+    endif()
 endif()
 
-if (NOT APPLE)
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/version.h.in" "${CMAKE_CURRENT_BINARY_DIR}/version.h")
+target_sources(core PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/version.h")
+target_include_directories(core PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
+
+set(BUILD_SHARED_LIBS OFF)
+add_subdirectory(teakra EXCLUDE_FROM_ALL)
+# Workaround for building teakra with -O0 on Windows either failing or hanging forever
+target_compile_options(teakra PRIVATE "$<$<CONFIG:DEBUG>:-Og>")
+target_link_libraries(core PRIVATE teakra)
+
+if (NOT MSVC)
+    # MSVC has its own compiler flag syntax; if we ever support it,
+    # be sure to add equivalent flags here.
+
+    target_compile_options(core PUBLIC -fwrapv)
+
+    target_compile_options(core PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-Wno-invalid-offsetof>")
+    # These warnings are excessive, and are only triggered in the ARMJIT code
+    # (which is fundamentally non-portable, so this is fine)
+endif()
+
+# Fix xxhash compile errors when using -Og
+# See https://github.com/Cyan4973/xxHash/blob/136cc1f8fe4d5ea62a7c16c8424d4fa5158f6d68/README.md?plain=1#L159-L163
+target_compile_definitions(core PRIVATE $<$<CONFIG:DEBUG>:XXH_NO_INLINE_HINTS=1>)
+
+find_library(m MATH_LIBRARY)
+
+if (MATH_LIBRARY)
+    target_link_libraries(core PRIVATE ${MATH_LIBRARY})
+endif()
+
+if (ENABLE_JIT)
+    target_compile_definitions(core PUBLIC JIT_ENABLED)
+
+    if (ENABLE_JIT_PROFILING)
+        include(../cmake/FindVTune.cmake)
+        add_definitions(-DJIT_PROFILING_ENABLED)
+    endif()
 endif()
 
 if (WIN32)
-    option(BUILD_STATIC "Statically link dependencies" OFF)
-    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0601 -DWINVER=0x0601)
+    target_link_libraries(core PRIVATE ole32 comctl32 wsock32 ws2_32)
+
     if (NOT MINGW)
-        add_definitions(-D__WIN32__ -D_CRT_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES)
-        if (BUILD_STATIC)
-            set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-        endif()
-    elseif (BUILD_STATIC AND MINGW)
-        set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
+        find_path(DIRENT_INCLUDE_DIRS "dirent.h")
+        target_include_directories(core PUBLIC ${DIRENT_INCLUDE_DIRS})
     endif()
+elseif(NOT APPLE AND NOT HAIKU)
+    check_library_exists(rt shm_open "" NEED_LIBRT)
+    if (NEED_LIBRT)
+        target_link_libraries(core PRIVATE rt)
+    endif()
+elseif(HAIKU)
+    target_link_libraries(core PRIVATE network)
 endif()
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-option(ENABLE_GDBSTUB "Enable GDB stub" ON)
-if (ENABLE_GDBSTUB)
-    add_definitions(-DGDBSTUB_ENABLED)
+if (ENABLE_JIT_PROFILING)
+    target_include_directories(core PRIVATE "${VTUNE_INCLUDE_DIR}")
+    target_link_libraries(core PRIVATE "${VTUNE_LIBRARY}")
 endif()
 
-option(BUILD_QT_SDL "Build Qt/SDL frontend" ON)
-
-add_subdirectory(src)
-
-if (BUILD_QT_SDL)
-    add_subdirectory(src/frontend/qt_sdl)
-endif()
+#if(CMAKE_BUILD_TYPE MATCHES "Debug")
+#  set(
+#    CMAKE_C_FLAGS
+#    "${CMAKE_C_FLAGS} -fsanitize=undefined -fsanitize=address"
+#  )
+#  target_link_options(core
+#    BEFORE PUBLIC -fsanitize=undefined PUBLIC -fsanitize=address
+#  )
+#endif()
