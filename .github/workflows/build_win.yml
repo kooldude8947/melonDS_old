@@ -20,7 +20,7 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: CLANG64
-          update: false
+          update: true
 
       - name: Download dependencies
         run: |
