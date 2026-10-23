@@ -22,11 +22,17 @@ jobs:
           msystem: CLANG64
           update: false
 
+      - name: Install dependencies
+        working-directory: ${{github.workspace}}\MSYS2-packages\libarchive
+        shell: msys2 {0}
+        run: |
+          pacman -S --noconfirm --needed base-devel
+          
       - name: Upload conf
         uses: actions/upload-artifact@v7
         with:
           name: conf-file
-          path: ${{github.workspace}}\MSYS2-packages\pacman\makepkg.conf
+          path: ${{github.workspace}}\MSYS2-packages\pacman
           include-hidden-files: true
           
       - name: Download dependencies
