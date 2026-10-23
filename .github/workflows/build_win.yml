@@ -22,6 +22,12 @@ jobs:
           msystem: CLANG64
           update: false
 
+      - name: Upload conf
+        uses: actions/upload-artifact@v7
+        with:
+          name: conf-file
+          path: ${{github.workspace}}\MSYS2-packages\pacman\makepkg.conf
+          
       - name: Download dependencies
         run: |
           git config --local core.autocrlf false
