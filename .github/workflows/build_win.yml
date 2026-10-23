@@ -21,8 +21,15 @@ jobs:
         with:
           msystem: CLANG64
           update: false
+
+      - name: Download dependencies
+        shell: cmd
+        run: |
+          git config --local core.autocrlf false
+          git clone --revision 75bb29d4ff88fbcc64babcb74fbcac626c01b426 https://github.com/msys2/MSYS2-packages
           
       - name: Install dependencies
+        working-directory: ${{github.workspace}}\MSYS2-packages\libarchive
         shell: msys2 {0}
         run: |
           pacman -S --noconfirm --needed base-devel
