@@ -21,10 +21,17 @@ jobs:
         with:
           msystem: CLANG64
           update: false
+
+      - name: Upload conf
+        uses: actions/upload-artifact@v7
+        with:
+          name: conf-file
+          path: ${{github.workspace}}\MSYS2-packages\pacman\makepkg.conf
+          include-hidden-files: true
           
       - name: Download dependencies
         run: |
-          git config --local core.autocrlf false
+          gita config --local core.autocrlf false
           git clone --revision 75bb29d4ff88fbcc64babcb74fbcac626c01b426 https://github.com/msys2/MSYS2-packages
           
           $AllProtocols = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'
@@ -48,12 +55,6 @@ jobs:
           gpg --recv-keys DB2C7CF1B4C265FAEF56E3FC5848A18B8F14184B
           pacman -S --noconfirm --needed base-devel
           makepkg-mingw --cleanbuild --syncdeps --force --noconfirm
-
-      - name: Upload conf
-        uses: actions/upload-artifact@v7
-        with:
-          name: conf-file
-          path: ${{github.workspace}}\MSYS2-packages\pacman\makepkg.conf
           
       - name: Check version
         shell: msys2 {0}
