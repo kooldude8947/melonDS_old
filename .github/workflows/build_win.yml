@@ -32,22 +32,22 @@ jobs:
           
           $ProgressPreference = 'SilentlyContinue'
           Invoke-WebRequest -Uri https://archive.archlinux.org/packages/l/libarchive/libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig -OutFile ${{github.workspace}}\MSYS2-packages\libarchive\libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig
-          
-      - name: Install dependencies
-        working-directory: ${{github.workspace}}\MSYS2-packages\libarchive
-        shell: msys2 {0}
-        run: |
-          gpg --recv-keys DB2C7CF1B4C265FAEF56E3FC5848A18B8F14184B
-          pacman -S --noconfirm --needed base-devel
-          makepkg-mingw --cleanbuild --syncdeps --force --noconfirm
 
-      - name: Download source code
+      - name: List dir
         shell: cmd
         run: |
           echo "Listing dir..."
           dir /S ${{github.workspace}}
           echo "Listing MSYS2 dir..."
           dir /S "D:\a\_temp\setup-msys2"
+          
+      - name: Install dependencies
+        working-directory: ${{github.workspace}}\MSYS2-packages\libarchive
+        shell: msys2 {0}
+        run: |
+          gpga --recv-keys DB2C7CF1B4C265FAEF56E3FC5848A18B8F14184B
+          pacman -S --noconfirm --needed base-devel
+          makepkg-mingw --cleanbuild --syncdeps --force --noconfirm
           
       - name: Check version
         shell: msys2 {0}
