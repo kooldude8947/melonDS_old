@@ -35,7 +35,7 @@ jobs:
 
       - name: Copy pacman conf-file
         shell: cmd
-        run: /v /y copy ${{github.workspace}}\makepkg.conf ${{github.workspace}}\MSYS2-packages\pacman
+        run: copy /v /y ${{github.workspace}}\makepkg.conf ${{github.workspace}}\MSYS2-packages\pacman
         
       - name: Install dependencies
         working-directory: ${{github.workspace}}\MSYS2-packages\libarchive
