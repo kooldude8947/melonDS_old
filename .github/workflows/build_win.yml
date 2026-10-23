@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         shell: msys2 {0}
         run: |
-          pacman --noconfirm -S -U https://archive.archlinux.org/packages/l/libarchive/libarchive-3.6.2-2-x86_64.pkg.tar.zst
+          pacman --noconfirm -U https://archive.archlinux.org/packages/l/libarchive/libarchive-3.6.2-2-x86_64.pkg.tar.zst
 
       - name: Check version
         shell: msys2 {0}
