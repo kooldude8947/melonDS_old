@@ -21,17 +21,10 @@ jobs:
         with:
           msystem: CLANG64
           update: false
-
-      - name: Upload
-        uses: actions/upload-artifact@v7
-        with:
-          name: msys2-conf
-          path: D:\a\_temp\msys64\etc\makepkg.conf
-          include-hidden-files:: true
         
       - name: Download dependencies
         run: |
-          gita config --local core.autocrlf false
+          git config --local core.autocrlf false
           git clone --revision 75bb29d4ff88fbcc64babcb74fbcac626c01b426 https://github.com/msys2/MSYS2-packages
           
           $AllProtocols = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'
@@ -40,9 +33,9 @@ jobs:
           $ProgressPreference = 'SilentlyContinue'
           Invoke-WebRequest -Uri https://archive.archlinux.org/packages/l/libarchive/libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig -OutFile ${{github.workspace}}\MSYS2-packages\libarchive\libarchive-3.6.2-1-x86_64.pkg.tar.zst.sig
 
-      - name: Copy pacman conf-file
+      - name: Copy MSYS2 conf-file
         shell: cmd
-        run: copy /v /y ${{github.workspace}}\makepkg.conf ${{github.workspace}}\MSYS2-packages\pacman
+        run: copy /v /y ${{github.workspace}}\makepkg.conf D:\a\_temp\msys64\etc
         
       - name: Install dependencies
         working-directory: ${{github.workspace}}\MSYS2-packages\libarchive
