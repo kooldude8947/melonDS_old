@@ -52,4 +52,4 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: melonDS-windows-x86_64
-          path: .\build\release-windows-x86_64\melonDS.exe
+          path: .\build\melonDS.exe
