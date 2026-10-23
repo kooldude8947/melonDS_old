@@ -1,0 +1,84 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+
+pkgname=('libarchive' 'libarchive-devel' 'bsdcpio' 'bsdtar')
+pkgver=3.6.2
+pkgrel=3
+pkgdesc="Multi-format archive and compression library"
+arch=('i686' 'x86_64')
+url="https://libarchive.org/"
+license=('BSD')
+groups=('libraries')
+depends=('gcc-libs' 'libbz2' 'libiconv' 'libexpat' 'liblzma' 'liblz4' 'libopenssl' 'libzstd' 'zlib')
+makedepends=('libbz2-devel' 'libiconv-devel' 'libexpat-devel' 'liblzma-devel' 'liblz4-devel' 'openssl-devel' 'libzstd-devel' 'zlib-devel' 'autotools' 'gcc')
+source=("https://github.com/libarchive/libarchive/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.xz"{,.asc})
+sha256sums=('9e2c1b80d5fbe59b61308fdfab6c79b5021d7ff4ff2489fb12daf0a96a83551d'
+            'SKIP')
+validpgpkeys=("DB2C7CF1B4C265FAEF56E3FC5848A18B8F14184B") # Martin Matuska <martin@matuska.org>
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+
+  autoreconf -fiv
+}
+
+build() {
+  export lt_cv_deplibs_check_method='pass_all'
+  cd "${pkgname}-${pkgver}"
+
+  local CYGWIN_CHOST="${CHOST/-msys/-cygwin}"
+  # Mention default options explicitly to clarify any confusion
+  ./configure \
+    --prefix=/usr \
+    --build=${CYGWIN_CHOST} \
+    --enable-shared \
+    --enable-static \
+    --without-libiconv-prefix \
+    --without-xml2 \
+    --without-lzo2 \
+    --without-nettle \
+    --with-openssl \
+    --without-cng
+
+  make
+  make DESTDIR="${srcdir}/dest" install
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+
+  make check || true
+}
+
+package_bsdcpio() {
+  mkdir -p ${pkgdir}/usr/bin
+  mkdir -p ${pkgdir}/usr/share/man/man1/
+  cp -f ${srcdir}/dest/usr/bin/bsdcpio.exe ${pkgdir}/usr/bin/
+  cp -f ${srcdir}/dest/usr/share/man/man1/bsdcpio.* ${pkgdir}/usr/share/man/man1/
+}
+
+package_bsdtar() {
+  mkdir -p ${pkgdir}/usr/bin
+  mkdir -p ${pkgdir}/usr/share/man/man1/
+  cp -f ${srcdir}/dest/usr/bin/bsdtar.exe ${pkgdir}/usr/bin/
+  cp -f ${srcdir}/dest/usr/share/man/man1/bsdtar.* ${pkgdir}/usr/share/man/man1/
+}
+
+package_libarchive() {
+  mkdir -p ${pkgdir}/usr/bin
+  cp -f ${srcdir}/dest/usr/bin/*.dll ${pkgdir}/usr/bin/
+
+  install -D -m644 ${srcdir}/${pkgname}-${pkgver}/COPYING ${pkgdir}/usr/share/licenses/libarchive/COPYING
+}
+
+package_libarchive-devel() {
+  groups=('development')
+  options=('staticlibs')
+  depends=("libarchive=${pkgver}" 'libbz2-devel' 'libiconv-devel' 'libexpat-devel' 'liblzma-devel' 'liblz4-devel' 'libnettle-devel' 'libxml2-devel' 'libzstd-devel' 'zlib-devel')
+
+  mkdir -p ${pkgdir}/usr
+  cp -rf ${srcdir}/dest/usr/include ${pkgdir}/usr/
+  cp -rf ${srcdir}/dest/usr/lib ${pkgdir}/usr/
+
+  # iconv doesn't have a .pc file
+  sed -i "s| iconv||g" ${pkgdir}/usr/lib/pkgconfig/libarchive.pc
+}
