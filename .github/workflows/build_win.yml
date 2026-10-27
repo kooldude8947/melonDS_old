@@ -1,0 +1,40 @@
+name: melonDS Windows
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+   
+jobs:
+  build:
+    runs-on: windows-2025-vs2026
+    steps:
+      - uses: actions/checkout@v7
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANG64
+          update: false
+        
+      - name: Install dependencies
+        shell: msys2 {0}
+        run: pacman --noconfirm -S mingw-w64-clang-x86_64-{toolchain,cmake,SDL2,qt5-static,enet,zstd,faad2}
+          
+      - name: Download source code
+        shell: cmd
+        run: |
+          git clone --revision 430de6b2702bb93faa8c2004aff3fbd084db4a1e https://github.com/melonDS-emu/melonDS
+  
+      - name: Build
+        shell: msys2 {0}
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DENABLE_GDBSTUB=OFF -DENABLE_DEBUG_DEPS=OFF -DMELONDS_EMBED_BUILD_INFO=OFF -DCMAKE_PREFIX_PATH=$MSYSTEM_PREFIX/qt5-static
+          cmake --build build
+        
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: melonDS-windows-x86_64
+          path: .\build\melonDS.exe
