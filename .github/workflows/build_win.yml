@@ -27,7 +27,7 @@ jobs:
         run: |
           git clone --revision 430de6b2702bb93faa8c2004aff3fbd084db4a1e https://github.com/melonDS-emu/melonDS
           xcopy /h /q /s /x /o /y /v /e /k ${{ github.workspace }}\melonDS ${{ github.workspace }}
-          rmdir /s ${{ github.workspace }}\melonDS
+          rmdir /q /s ${{ github.workspace }}\melonDS
   
       - name: Build
         shell: msys2 {0}
