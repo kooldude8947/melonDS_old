@@ -20,7 +20,7 @@ jobs:
         
       - name: Install dependencies
         shell: msys2 {0}
-        run: pacman --noconfirm -S mingw-w64-clang-x86_64-{toolchain,cmake,SDL2,qt5-static,enet,zstd,faad2}
+        run: pacman --noconfirm -S mingw-w64-clang-x86_64-{toolchain,cmake,SDL2,qt5-static,enet,libslirp,zstd,faad2}
           
       - name: Download source code
         shell: cmd
@@ -33,7 +33,7 @@ jobs:
         shell: msys2 {0}
         run: |
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DUSE_QT6=OFF -DENABLE_GDBSTUB=OFF -DENABLE_DEBUG_DEPS=OFF -DMELONDS_EMBED_BUILD_INFO=OFF -DCMAKE_PREFIX_PATH=$MSYSTEM_PREFIX/qt5-static
-          cmake --build build
+          cmake --build build -j$(nproc --all)
         
       - name: Upload
         uses: actions/upload-artifact@v7
